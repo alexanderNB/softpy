@@ -14,7 +14,7 @@ class HasAlignChar(TypedDict):
 CystomAlignType = ExclusivelyAlignRule | HasAlignChar
   
 
-def display(*args, big:bool = True, end:str="", aligned:bool|CystomAlignType=False):
+def display(*args, big=True, end:str="", aligned:bool|CystomAlignType=False):
 	print(">beginLaTeX<" + (">BiG<\n" if big else "") + text_to_latex(*args, end=end, aligned=aligned) + ("\n" if big else "") + ">endLaTeX<", end="")
 
 def text_to_latex(*args, end : str, aligned : CystomAlignType|bool) -> str:
