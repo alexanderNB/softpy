@@ -350,6 +350,16 @@ class BinarySearchTree():
         return list(_visited.key for _visited in visited)
 
     def draw(self):
+        def assign_positions(node, x=0, y=0, positions=None, level_gap=1):
+            if positions is None:
+                positions = {}
+            if node:
+                positions[node] = (x, y)
+                # Assign positions for left and right children
+                positions = assign_positions(node.left, x - level_gap, y - 1, positions, level_gap / 2)
+                positions = assign_positions(node.right, x + level_gap, y - 1, positions, level_gap / 2)
+            return positions
+        
         V = set()
         E = set()
         visited = []
@@ -358,19 +368,22 @@ class BinarySearchTree():
             if current_node not in visited:
                 visited.append(current_node)
                 V.add(current_node)
-            if current_node.left and current_node.left not in visited:
-                E.add((current_node, current_node.left))
-                current_node = current_node.left
-            elif current_node.right and current_node.right not in visited:
+            if current_node.right and current_node.right not in visited:
                 E.add((current_node, current_node.right))
                 current_node = current_node.right
+            elif current_node.left and current_node.left not in visited:
+                E.add((current_node, current_node.left))
+                current_node = current_node.left
+
             else:
                 current_node = current_node.parent
         W = nx.DiGraph()
         W.add_nodes_from(V)
         W.add_edges_from(E)
+        
         labels = {node: node.key for node in V}
-        pos = graphviz_layout(W, prog="dot")
+        # pos = graphviz_layout(W, prog="dot", seed=42)
+        pos = assign_positions(self.root)
         nx.draw(W, pos, labels = labels, **nx_args)
         plt.show()
         return visited
