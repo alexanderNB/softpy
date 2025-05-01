@@ -308,3 +308,76 @@ def DFS(adjancency_list : dict, startnode):
     W.add_edges_from(E)
     pos = graphviz_layout(W, prog="dot") # 'dot' is suitable for tree layouts
     nx.draw(W, pos, **nx_args)
+
+
+class BinarySearchTree():
+    def __init__(self):
+        self.root = None
+
+    def insert(self, x, v = "root"):
+        if not isinstance(x, DoubleLinkedList):
+            x = DoubleLinkedList(x)
+        if self.root == None:
+            self.root = x
+            return
+        if (v == "root"): v = self.root
+            
+        if v == None:
+            return x
+        x.parent = v
+        if x.key <= v.key:
+            v.left = self.insert(x, v.left)
+        else:
+            v.right = self.insert(x, v.right)
+        return v
+
+    def dInsert(self, x):
+        self.insert(x)
+        self.draw()
+
+    def preorder_traversal(self):
+        visited = []
+        current_node = self.root
+        while current_node:
+            if current_node not in visited:
+                visited.append(current_node)
+            if current_node.left and current_node.left not in visited:
+                current_node = current_node.left
+            elif current_node.right and current_node.right not in visited:
+                current_node = current_node.right
+            else:
+                current_node = current_node.parent
+        return list(_visited.key for _visited in visited)
+
+    def draw(self):
+        V = set()
+        E = set()
+        visited = []
+        current_node = self.root
+        while current_node:
+            if current_node not in visited:
+                visited.append(current_node)
+                V.add(current_node)
+            if current_node.left and current_node.left not in visited:
+                E.add((current_node, current_node.left))
+                current_node = current_node.left
+            elif current_node.right and current_node.right not in visited:
+                E.add((current_node, current_node.right))
+                current_node = current_node.right
+            else:
+                current_node = current_node.parent
+        W = nx.DiGraph()
+        W.add_nodes_from(V)
+        W.add_edges_from(E)
+        labels = {node: node.key for node in V}
+        pos = graphviz_layout(W, prog="dot")
+        nx.draw(W, pos, labels = labels, **nx_args)
+        plt.show()
+        return visited
+class DoubleLinkedList():
+
+    def __init__(self, key):
+        self.parent = None
+        self.left = None
+        self.right = None
+        self.key = key
