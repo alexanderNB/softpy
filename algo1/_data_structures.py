@@ -92,6 +92,40 @@ class Heap:
     def parent(self, x):
         return floor(x/2)
     
+    def draw(self):
+        def assign_positions(idx, x=0, y=0, positions=None, level_gap=1):
+            if positions is None:
+                positions = {}
+            if idx <= 0 or idx >= len(self.H) or self.H[idx] is None:
+                return positions
+
+            positions[idx] = (x, y)
+            assign_positions(2*idx, x - level_gap, y - 1, positions, level_gap/2)
+            assign_positions(2*idx+1, x + level_gap, y - 1, positions, level_gap/2)
+            return positions
+
+        V = set()
+        E = set()
+        for i in range(1, len(self.H)):
+            if self.H[i] is None:
+                continue
+            V.add(i)
+            li = self.left(i)
+            if li < len(self.H) and self.H[li] is not None:
+                V.add(li)
+                E.add((i, li))
+            ri = self.right(i)
+            if ri < len(self.H) and self.H[ri] is not None:
+                V.add(ri)
+                E.add((i, ri))
+
+        G = nx.DiGraph()
+        G.add_nodes_from(V)
+        G.add_edges_from(E)
+
+        labels = {i: self.H[i] for i in V}
+        pos = assign_positions(1)   # start at index 1 (the root)
+        nx.draw(G, pos, labels=labels, **nx_args)
 
     def __str__(self):
         result = ""
@@ -387,6 +421,7 @@ class BinarySearchTree():
         nx.draw(W, pos, labels = labels, **nx_args)
         plt.show()
         return visited
+
 class DoubleLinkedList():
 
     def __init__(self, key):
